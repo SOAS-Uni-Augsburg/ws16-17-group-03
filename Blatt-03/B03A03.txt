@@ -1,0 +1,7 @@
+a)
+zz: Roboter maximiert (unter Berücksichtigung seines Wissens) das Performancemaß
+Performancemaß = # sauberer Zellen über 100 Schritte
+Sauger saugt -> mehr saubere Zellen -> Performancemaß steigt
+
+b)
+
