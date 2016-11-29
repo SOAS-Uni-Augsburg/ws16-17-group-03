@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import isse.model.GameEngine;
 import isse.model.PlayStrategy;
 import isse.model.Player;
+import isse.model.strategies.AlphaBetaStrategy;
 import isse.model.strategies.InteractiveStrategy;
+import isse.model.strategies.MiniMaxStrategy;
 import isse.model.strategies.NaiveStrategy;
 import isse.model.strategies.RandomStrategy;
 import isse.model.strategies.ReflexStrategyEasy;
@@ -35,6 +38,7 @@ public class TestGameEngine {
 	}
 
 	@Test
+	// @Ignore
 	public void testNaiveStrategies() {
 		PlayStrategy naive = new NaiveStrategy();
 		engine.registerStrategy(Player.CROSSES, naive);
@@ -45,8 +49,9 @@ public class TestGameEngine {
 	}
 
 	@Test
+	// @Ignore
 	public void testRandomVsNaiveStrategie() {
-		int ANZAHL_SPIELE = 100000;
+		int ANZAHL_SPIELE = 1000;
 
 		xStrategy = new NaiveStrategy();
 		oStrategy = new RandomStrategy();
@@ -56,8 +61,9 @@ public class TestGameEngine {
 	}
 
 	@Test
+	// @Ignore
 	public void testRandomVsRandomStrategie() {
-		int ANZAHL_SPIELE = 100000;
+		int ANZAHL_SPIELE = 1000;
 
 		xStrategy = new RandomStrategy();
 		oStrategy = new RandomStrategy();
@@ -69,7 +75,7 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testRandomVsRuleBasedStrategieLvl1() {
-		int ANZAHL_SPIELE = 100000;
+		int ANZAHL_SPIELE = 1000;
 
 		xStrategy = new ReflexStrategyEasy();
 		oStrategy = new RandomStrategy();
@@ -81,7 +87,7 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testRandomVsRuleBasedStrategieLvl2() {
-		int ANZAHL_SPIELE = 100000;
+		int ANZAHL_SPIELE = 1000;
 
 		xStrategy = new ReflexStrategyNormal();
 		oStrategy = new RandomStrategy();
@@ -93,7 +99,7 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testRandomVsRuleBasedStrategieLvl3() {
-		int ANZAHL_SPIELE = 100000;
+		int ANZAHL_SPIELE = 1000;
 
 		xStrategy = new ReflexStrategyHard();
 		oStrategy = new RandomStrategy();
@@ -104,6 +110,84 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
+	public void testReflexLvl1VsLvl3Strategie() {
+		int ANZAHL_SPIELE = 1000;
+
+		xStrategy = new ReflexStrategyHard();
+		oStrategy = new ReflexStrategyHard();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testReflexVsMinMaxStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new ReflexStrategyHard();
+		oStrategy = new MiniMaxStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testMinMaxVsReflexStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new MiniMaxStrategy();
+		oStrategy = new ReflexStrategyHard();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testMinMaxVsMinMaxStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new MiniMaxStrategy();
+		oStrategy = new MiniMaxStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	@Ignore
+	public void testReflexVsAlphaBetaStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new ReflexStrategyHard();
+		oStrategy = new AlphaBetaStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	@Ignore
+	public void testAlphaBetaVsReflexStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new AlphaBetaStrategy();
+		oStrategy = new ReflexStrategyHard();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testAlphaBetaVsAlphaBetaStrategie() {
+		int ANZAHL_SPIELE = 50;
+		xStrategy = new AlphaBetaStrategy();
+		oStrategy = new AlphaBetaStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	@Ignore
 	public void testHumanStrategies() {
 		engine.surpressOutput = false;
 		PlayStrategy interactive = new InteractiveStrategy();
@@ -135,10 +219,15 @@ public class TestGameEngine {
 	private void showStatistics() {
 		int draws = (int) winners.stream().filter(p -> p == (null)).count();
 		System.out.println("Draws: " + draws);
-		int winnsOfX = (int) winners.stream().filter(p -> Player.CROSSES.equals(p)).count();
-		System.out.println("Winns of X (" + xStrategy.getClass().getSimpleName() + "): " + winnsOfX);
-		int winnsOfO = (int) winners.stream().filter(p -> Player.NOUGHTS.equals(p)).count();
-		System.out.println("Winns of O (" + oStrategy.getClass().getSimpleName() + "): " + winnsOfO);
+		int winsOfX = (int) winners.stream()
+				.filter(p -> Player.CROSSES.equals(p)).count();
+		System.out.println("Wins of X (" + xStrategy.getClass().getSimpleName()
+				+ "): " + winsOfX);
+		int winsOfO = (int) winners.stream()
+				.filter(p -> Player.NOUGHTS.equals(p)).count();
+		System.out.println("Wins of O (" + oStrategy.getClass().getSimpleName()
+				+ "): " + winsOfO);
+		System.out.println();
 	}
 
 }

@@ -25,6 +25,8 @@ public class StrategyProvider {
 		strategies.put("Reflex easy", ReflexStrategyEasy.class);
 		strategies.put("Reflex normal", ReflexStrategyNormal.class);
 		strategies.put("Reflex hard", ReflexStrategyHard.class);
+		strategies.put("MiniMax", MiniMaxStrategy.class);
+		strategies.put("AlphaBeta", AlphaBetaStrategy.class);
 	}
 
 	public String[] provideStrategyKeywords() {

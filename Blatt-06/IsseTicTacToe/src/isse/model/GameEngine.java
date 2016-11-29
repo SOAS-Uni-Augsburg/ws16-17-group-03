@@ -8,7 +8,6 @@ import isse.control.ControlAction;
 import isse.model.strategies.DelayedPlayStrategy;
 import isse.model.strategies.InteractiveUIStrategy;
 import isse.model.strategies.PlayerBasedStrategy;
-import isse.model.strategies.ReflexStrategyEasy;
 
 /**
  * Deals with the setup of the game, connecting between player moves etc.
@@ -39,8 +38,10 @@ public class GameEngine extends Observable {
 		Player turn = Player.CROSSES;
 		Player winner = null;
 
-		if (strategies.get(Player.CROSSES) == null || strategies.get(Player.NOUGHTS) == null)
-			throw new RuntimeException("You forgot to register playing strategies");
+		if (strategies.get(Player.CROSSES) == null
+				|| strategies.get(Player.NOUGHTS) == null)
+			throw new RuntimeException(
+					"You forgot to register playing strategies");
 
 		boolean terminated = false;
 		int illegalMoves = 10; // to prevent endless loops
@@ -57,7 +58,8 @@ public class GameEngine extends Observable {
 			int countIllegals = 0;
 
 			Move move = null;
-			emitMessage("Player " + turn + "' s turn. (" + nextStrategy.getClass().getSimpleName() + ")");
+			emitMessage("Player " + turn + "' s turn. ("
+					+ nextStrategy.getClass().getSimpleName() + ")");
 
 			while (countIllegals < illegalMoves) {
 				move = nextStrategy.getMove(board);
@@ -71,7 +73,9 @@ public class GameEngine extends Observable {
 			}
 
 			if (countIllegals >= illegalMoves) {
-				gameMessage = "Player " + turn + " exceeded illegal move threshold (" + countIllegals + ")";
+				gameMessage = "Player " + turn
+						+ " exceeded illegal move threshold (" + countIllegals
+						+ ")";
 				System.out.println(gameMessage);
 				terminated = true;
 			} else {
@@ -116,7 +120,7 @@ public class GameEngine extends Observable {
 			strategy = ((DelayedPlayStrategy) strategy).getInnerStrategy();
 		}
 		if (PlayerBasedStrategy.class.isAssignableFrom(strategy.getClass())) {
-			((ReflexStrategyEasy) strategy).setPlayer(player);
+			((PlayerBasedStrategy) strategy).setPlayer(player);
 		}
 
 	}
