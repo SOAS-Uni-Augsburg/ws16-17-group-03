@@ -5,8 +5,9 @@ import isse.model.Move;
 import isse.model.PlayStrategy;
 
 /**
- * Decorates another strategy to have better visible gameplay;
- * basically just a UI feature
+ * Decorates another strategy to have better visible gameplay; basically just a
+ * UI feature
+ * 
  * @author isse-soas
  *
  */
@@ -14,12 +15,12 @@ public class DelayedPlayStrategy implements PlayStrategy {
 
 	private PlayStrategy decoratedStrategy;
 	private int delayInMs;
-	
+
 	public DelayedPlayStrategy(PlayStrategy decoratedStrategy, int delayInMs) {
 		this.decoratedStrategy = decoratedStrategy;
 		this.delayInMs = delayInMs;
 	}
-	
+
 	@Override
 	public Move getMove(GameBoard board) {
 		try {
@@ -27,8 +28,11 @@ public class DelayedPlayStrategy implements PlayStrategy {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		
+
 		return decoratedStrategy.getMove(board);
 	}
 
+	public PlayStrategy getInnerStrategy() {
+		return decoratedStrategy;
+	}
 }

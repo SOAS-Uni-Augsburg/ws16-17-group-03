@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import isse.model.GameEngine;
@@ -13,6 +12,9 @@ import isse.model.Player;
 import isse.model.strategies.InteractiveStrategy;
 import isse.model.strategies.NaiveStrategy;
 import isse.model.strategies.RandomStrategy;
+import isse.model.strategies.ReflexStrategyEasy;
+import isse.model.strategies.ReflexStrategyHard;
+import isse.model.strategies.ReflexStrategyNormal;
 
 public class TestGameEngine {
 
@@ -23,8 +25,13 @@ public class TestGameEngine {
 
 	@Before
 	public void setup() {
-		engine = new GameEngine();
+		setupEngine();
 		winners = new ArrayList<Player>();
+	}
+
+	private void setupEngine() {
+		engine = new GameEngine();
+		engine.surpressOutput = true;
 	}
 
 	@Test
@@ -39,7 +46,7 @@ public class TestGameEngine {
 
 	@Test
 	public void testRandomVsNaiveStrategie() {
-		int ANZAHL_SPIELE = 10000;
+		int ANZAHL_SPIELE = 100000;
 
 		xStrategy = new NaiveStrategy();
 		oStrategy = new RandomStrategy();
@@ -49,11 +56,60 @@ public class TestGameEngine {
 	}
 
 	@Test
-	@Ignore
+	public void testRandomVsRandomStrategie() {
+		int ANZAHL_SPIELE = 100000;
+
+		xStrategy = new RandomStrategy();
+		oStrategy = new RandomStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testRandomVsRuleBasedStrategieLvl1() {
+		int ANZAHL_SPIELE = 100000;
+
+		xStrategy = new ReflexStrategyEasy();
+		oStrategy = new RandomStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testRandomVsRuleBasedStrategieLvl2() {
+		int ANZAHL_SPIELE = 100000;
+
+		xStrategy = new ReflexStrategyNormal();
+		oStrategy = new RandomStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testRandomVsRuleBasedStrategieLvl3() {
+		int ANZAHL_SPIELE = 100000;
+
+		xStrategy = new ReflexStrategyHard();
+		oStrategy = new RandomStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
 	public void testHumanStrategies() {
+		engine.surpressOutput = false;
 		PlayStrategy interactive = new InteractiveStrategy();
+		PlayStrategy temp = new ReflexStrategyEasy();
+		engine.registerStrategy(Player.NOUGHTS, temp);
 		engine.registerStrategy(Player.CROSSES, interactive);
-		engine.registerStrategy(Player.NOUGHTS, interactive);
 
 		// now play
 		engine.play();
@@ -63,11 +119,15 @@ public class TestGameEngine {
 
 		// now play
 		for (int i = 0; i < anz; i++) {
-			engine = new GameEngine();
-			engine.registerStrategy(Player.CROSSES, oStrategy);
-			engine.registerStrategy(Player.NOUGHTS, xStrategy);
+			setupEngine();
+			engine.registerStrategy(Player.CROSSES, xStrategy);
+			engine.registerStrategy(Player.NOUGHTS, oStrategy);
 
-			winners.add(engine.play());
+			Player winner = engine.play();
+			// if (Player.NOUGHTS.equals(winner)) {
+			// break;
+			// }
+			winners.add(winner);
 
 		}
 	}

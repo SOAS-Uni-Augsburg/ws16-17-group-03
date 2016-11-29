@@ -5,7 +5,10 @@ import java.util.Map;
 import java.util.Observable;
 
 import isse.control.ControlAction;
+import isse.model.strategies.DelayedPlayStrategy;
 import isse.model.strategies.InteractiveUIStrategy;
+import isse.model.strategies.PlayerBasedStrategy;
+import isse.model.strategies.ReflexStrategyEasy;
 
 /**
  * Deals with the setup of the game, connecting between player moves etc.
@@ -15,6 +18,7 @@ import isse.model.strategies.InteractiveUIStrategy;
  */
 public class GameEngine extends Observable {
 	private GameBoard board;
+	public boolean surpressOutput = false;
 
 	public GameBoard getBoard() {
 		return board;
@@ -71,9 +75,10 @@ public class GameEngine extends Observable {
 				System.out.println(gameMessage);
 				terminated = true;
 			} else {
-
-				System.out.println("Player " + turn + " chose " + move);
-				System.out.println(board);
+				if (!surpressOutput) {
+					System.out.println("Player " + turn + " chose " + move);
+					System.out.println(board);
+				}
 				this.setChanged();
 				this.notifyObservers(board);
 
@@ -97,12 +102,22 @@ public class GameEngine extends Observable {
 	}
 
 	private void emitMessage(String string) {
-		System.out.println(string);
+		if (!surpressOutput) {
+			System.out.println(string);
+		}
 		setChanged();
 		notifyObservers(string);
 	}
 
 	public void registerStrategy(Player player, PlayStrategy strategy) {
 		strategies.put(player, strategy);
+
+		if (strategy instanceof DelayedPlayStrategy) {
+			strategy = ((DelayedPlayStrategy) strategy).getInnerStrategy();
+		}
+		if (PlayerBasedStrategy.class.isAssignableFrom(strategy.getClass())) {
+			((ReflexStrategyEasy) strategy).setPlayer(player);
+		}
+
 	}
 }

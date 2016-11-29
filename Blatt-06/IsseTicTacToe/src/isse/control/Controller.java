@@ -16,24 +16,24 @@ import isse.ui.TicTacToeUI;
 public class Controller {
 	private TicTacToeUI ticTacToeUI; // view
 	private GameEngine gameEngine; // model
-	
+
 	public static void main(String[] args) {
-		// first, start up the UI 
+		// first, start up the UI
 		setupNimbus();
-		
+
 		Controller controller = new Controller();
 		controller.startUI();
-		
+
 	}
 
 	private void startUI() {
 		ticTacToeUI = new TicTacToeUI();
-		
+
 		ticTacToeUI.setController(this);
 		/* Create and display the form */
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				
+
 				ticTacToeUI.setVisible(true);
 			}
 		});
@@ -66,7 +66,7 @@ public class Controller {
 	public void startGame(final PlayStrategy firstStrategy,
 			final PlayStrategy secondStrategy) {
 		final GameEngine gameEngine = new GameEngine();
-		
+
 		gameEngine.addObserver(ticTacToeUI);
 		gameEngine.registerStrategy(Player.CROSSES, firstStrategy);
 		gameEngine.registerStrategy(Player.NOUGHTS, secondStrategy);
@@ -84,11 +84,12 @@ public class Controller {
 					((InteractiveUIStrategy) secondStrategy)
 							.setUIMove(strategyMove);
 				}
+
 				gameEngine.play();
 			}
 		};
 		Thread gameThread = new Thread(runnableForThread);
 		gameThread.start();
-		
+
 	}
 }
