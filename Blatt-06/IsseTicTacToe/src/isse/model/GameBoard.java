@@ -43,6 +43,13 @@ public class GameBoard {
 		board[row][col] = player.getFieldState();
 	}
 
+	public void undoMove(Player player, int row, int col) {
+		if (board[row][col] != player.getFieldState())
+			throw new RuntimeException("Invalid move, wrond field state!");
+		possibleMoves.add(new Move(row, col));
+		board[row][col] = FieldState.EMPTY;
+	}
+
 	/**
 	 * Read method for play strategies
 	 * 
@@ -90,6 +97,10 @@ public class GameBoard {
 
 	public void move(Player turn, Move move) {
 		move(turn, move.row, move.col);
+	}
+
+	public void undoMove(Player turn, Move move) {
+		undoMove(turn, move.row, move.col);
 	}
 
 	public boolean isFull() {
@@ -169,47 +180,5 @@ public class GameBoard {
 
 	public List<Move> getPossibleMoves() {
 		return possibleMoves;
-	}
-
-	/**
-	 * Get the Winning moves for this Player
-	 * 
-	 * @param turn
-	 * @return
-	 */
-	public List<Move> getWinningMoves(Player turn) {
-
-		List<Move> winning = new ArrayList<Move>();
-		for (Move move : possibleMoves) {
-			GameBoard copy = this.getCopy();
-			copy.move(turn, move);
-			if (copy.isWonBy(turn, move)) {
-				winning.add(move);
-			}
-		}
-
-		return winning;
-
-	}
-
-	/**
-	 * Get the Winning moves for this Player
-	 * 
-	 * @param turn
-	 * @return
-	 */
-	public List<Move> getForkMoves(Player turn) {
-
-		List<Move> forking = new ArrayList<Move>();
-		for (Move move : possibleMoves) {
-			GameBoard copy = this.getCopy();
-			copy.move(turn, move);
-			List<Move> winningMoves = copy.getWinningMoves(turn);
-			if (winningMoves.size() > 1) {
-				forking.add(move);
-			}
-		}
-		return forking;
-
 	}
 }

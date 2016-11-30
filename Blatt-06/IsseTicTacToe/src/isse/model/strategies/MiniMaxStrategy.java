@@ -17,7 +17,7 @@ import isse.model.Player;
 public class MiniMaxStrategy extends RandomStrategy
 		implements PlayerBasedStrategy {
 
-	private static int SUCHTIEFE = 9;
+	private int SUCHTIEFE = 9;
 
 	private Player current, opponent;
 	private GameBoard workingBoard;
@@ -28,6 +28,10 @@ public class MiniMaxStrategy extends RandomStrategy
 	public void setPlayer(Player player) {
 		current = player;
 		opponent = (player == Player.CROSSES) ? Player.NOUGHTS : Player.CROSSES;
+	}
+
+	public void setSuchtiefe(int tiefe) {
+		SUCHTIEFE = tiefe;
 	}
 
 	@Override
@@ -206,8 +210,8 @@ public class MiniMaxStrategy extends RandomStrategy
 	/** Returns true if thePlayer wins */
 	private boolean hasWon(Player thePlayer) {
 		int pattern = 0b000000000; // 9-bit pattern for the 9 cells
-		for (int row = 0; row < 3; ++row) {
-			for (int col = 0; col < 3; ++col) {
+		for (int row = 0; row < workingBoard.getSize(); ++row) {
+			for (int col = 0; col < workingBoard.getSize(); ++col) {
 				if (workingBoard.getFieldState()[row][col] == thePlayer
 						.getFieldState()) {
 					pattern |= (1 << (row * 3 + col));

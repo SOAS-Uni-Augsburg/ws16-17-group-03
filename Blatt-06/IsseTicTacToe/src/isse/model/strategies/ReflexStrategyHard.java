@@ -6,7 +6,7 @@ package isse.model.strategies;
  * @author isse-soas
  *
  */
-public class ReflexStrategyHard extends ReflexStrategyEasy {
+public class ReflexStrategyHard extends ReflexStrategyBase {
 
 	public ReflexStrategyHard() {
 		setSchwierigkeit(2);

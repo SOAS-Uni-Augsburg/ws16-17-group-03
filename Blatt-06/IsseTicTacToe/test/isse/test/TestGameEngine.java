@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import isse.model.GameEngine;
@@ -51,10 +50,22 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testRandomVsNaiveStrategie() {
-		int ANZAHL_SPIELE = 1000;
+		int ANZAHL_SPIELE = 100000;
 
-		xStrategy = new NaiveStrategy();
-		oStrategy = new RandomStrategy();
+		xStrategy = new RandomStrategy();
+		oStrategy = new NaiveStrategy();
+
+		playNGames(ANZAHL_SPIELE);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
+	public void testReflexVsNaiveStrategie() {
+		int ANZAHL_SPIELE = 100000;
+
+		xStrategy = new ReflexStrategyHard();
+		oStrategy = new NaiveStrategy();
 
 		playNGames(ANZAHL_SPIELE);
 		showStatistics();
@@ -63,7 +74,7 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testRandomVsRandomStrategie() {
-		int ANZAHL_SPIELE = 1000;
+		int ANZAHL_SPIELE = 100000;
 
 		xStrategy = new RandomStrategy();
 		oStrategy = new RandomStrategy();
@@ -74,8 +85,8 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
-	public void testRandomVsRuleBasedStrategieLvl1() {
-		int ANZAHL_SPIELE = 1000;
+	public void testRandomVsReflexStrategieLvl0() {
+		int ANZAHL_SPIELE = 100000;
 
 		xStrategy = new ReflexStrategyEasy();
 		oStrategy = new RandomStrategy();
@@ -86,8 +97,8 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
-	public void testRandomVsRuleBasedStrategieLvl2() {
-		int ANZAHL_SPIELE = 1000;
+	public void testRandomVsReflexStrategieLvl1() {
+		int ANZAHL_SPIELE = 100000;
 
 		xStrategy = new ReflexStrategyNormal();
 		oStrategy = new RandomStrategy();
@@ -98,11 +109,11 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
-	public void testRandomVsRuleBasedStrategieLvl3() {
-		int ANZAHL_SPIELE = 1000;
+	public void testRandomVsReflexStrategieLvl2() {
+		int ANZAHL_SPIELE = 100000;
 
-		xStrategy = new ReflexStrategyHard();
-		oStrategy = new RandomStrategy();
+		xStrategy = new RandomStrategy();
+		oStrategy = new ReflexStrategyHard();
 
 		playNGames(ANZAHL_SPIELE);
 		showStatistics();
@@ -110,11 +121,11 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
-	public void testReflexLvl1VsLvl3Strategie() {
-		int ANZAHL_SPIELE = 1000;
+	public void testReflexVsReflexStrategie() {
+		int ANZAHL_SPIELE = 100000;
 
-		xStrategy = new ReflexStrategyHard();
-		oStrategy = new ReflexStrategyHard();
+		xStrategy = new ReflexStrategyEasy();
+		oStrategy = new ReflexStrategyEasy();
 
 		playNGames(ANZAHL_SPIELE);
 		showStatistics();
@@ -144,7 +155,7 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
-	public void testMinMaxVsMinMaxStrategie() {
+	public void testMiniMaxVsMiniMaxStrategie() {
 		int ANZAHL_SPIELE = 50;
 		xStrategy = new MiniMaxStrategy();
 		oStrategy = new MiniMaxStrategy();
@@ -154,21 +165,12 @@ public class TestGameEngine {
 	}
 
 	@Test
-	@Ignore
+	// @Ignore
 	public void testReflexVsAlphaBetaStrategie() {
-		int ANZAHL_SPIELE = 50;
-		xStrategy = new ReflexStrategyHard();
-		oStrategy = new AlphaBetaStrategy();
-
-		playNGames(ANZAHL_SPIELE);
-		showStatistics();
-	}
-
-	@Test
-	@Ignore
-	public void testAlphaBetaVsReflexStrategie() {
-		int ANZAHL_SPIELE = 50;
-		xStrategy = new AlphaBetaStrategy();
+		int ANZAHL_SPIELE = 10000;
+		AlphaBetaStrategy temp = new AlphaBetaStrategy();
+		temp.setSuchtiefe(4);
+		xStrategy = temp;
 		oStrategy = new ReflexStrategyHard();
 
 		playNGames(ANZAHL_SPIELE);
@@ -178,7 +180,7 @@ public class TestGameEngine {
 	@Test
 	// @Ignore
 	public void testAlphaBetaVsAlphaBetaStrategie() {
-		int ANZAHL_SPIELE = 50;
+		int ANZAHL_SPIELE = 10000;
 		xStrategy = new AlphaBetaStrategy();
 		oStrategy = new AlphaBetaStrategy();
 
@@ -187,11 +189,11 @@ public class TestGameEngine {
 	}
 
 	@Test
-	@Ignore
+	// @Ignore
 	public void testHumanStrategies() {
 		engine.surpressOutput = false;
 		PlayStrategy interactive = new InteractiveStrategy();
-		PlayStrategy temp = new ReflexStrategyEasy();
+		PlayStrategy temp = new NaiveStrategy();
 		engine.registerStrategy(Player.NOUGHTS, temp);
 		engine.registerStrategy(Player.CROSSES, interactive);
 

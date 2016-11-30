@@ -17,7 +17,7 @@ import isse.model.Player;
 public class AlphaBetaStrategy extends RandomStrategy
 		implements PlayerBasedStrategy {
 
-	private static int SUCHTIEFE = 9;
+	private int SUCHTIEFE = 9;
 
 	private Player current, opponent;
 	private GameBoard workingBoard;
@@ -30,6 +30,10 @@ public class AlphaBetaStrategy extends RandomStrategy
 		opponent = (player == Player.CROSSES) ? Player.NOUGHTS : Player.CROSSES;
 	}
 
+	public void setSuchtiefe(int tiefe) {
+		SUCHTIEFE = tiefe;
+	}
+
 	@Override
 	public Move getMove(GameBoard board) {
 		_counter = -1;
@@ -37,8 +41,8 @@ public class AlphaBetaStrategy extends RandomStrategy
 		int[] result = minimax(SUCHTIEFE, current, Integer.MIN_VALUE,
 				Integer.MAX_VALUE); // depth, max turn
 		_sum += _counter;
-		System.out.println("Current: " + current.name());
-		System.out.println("Sum: " + _sum + "\ncounter: " + _counter);
+		// System.out.println("Current: " + current.name());
+		// System.out.println("Sum: " + _sum + "\ncounter: " + _counter);
 		return new Move(result[1], result[2]); // row, col
 	}
 
