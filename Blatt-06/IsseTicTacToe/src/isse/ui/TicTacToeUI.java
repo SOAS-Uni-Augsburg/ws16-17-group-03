@@ -1,7 +1,11 @@
 package isse.ui;
 
+import java.awt.Color;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
+import javax.swing.JButton;
 
 import isse.control.ControlAction;
 import isse.control.Controller;
@@ -10,12 +14,9 @@ import isse.model.GameBoard;
 import isse.model.GameEngine;
 import isse.model.Move;
 import isse.model.PlayStrategy;
-import isse.model.Player;
 import isse.model.strategies.DelayedPlayStrategy;
 import isse.model.strategies.InteractiveUIStrategy;
 import isse.model.strategies.StrategyProvider;
-
-import javax.swing.JButton;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -66,6 +67,16 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 		} else if (arg instanceof String) {
 			String message = (String) arg;
 			announcement.setText(message);
+		} else if (arg instanceof List<?>) {
+			Color color = Color.green;
+			if (inverted) {
+				color = Color.red;
+			}
+
+			List<int[]> winningMoves = (List<int[]>) arg;
+			for (int[] toColor : winningMoves) {
+				fields[toColor[0]][toColor[1]].setForeground(color);
+			}
 		} else if (arg instanceof ControlAction) {
 			ControlAction ca = (ControlAction) arg;
 			GameEngine engine = (GameEngine) o;
@@ -115,12 +126,17 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 	}
 
 	private void initStrategyBoxes() {
-		String[] strategyIdentifiers = sp.provideStrategyKeywords();
+		String[] strategyIdentifiers;
+		if (inverted) {
+			strategyIdentifiers = sp.provideStrategyKeywords(true);
+		} else {
+			strategyIdentifiers = sp.provideStrategyKeywords(false);
+		}
 
-		player1Strategy.setModel(new javax.swing.DefaultComboBoxModel<>(
-				strategyIdentifiers));
-		player2Strategy.setModel(new javax.swing.DefaultComboBoxModel<>(
-				strategyIdentifiers));
+		player1Strategy.setModel(
+				new javax.swing.DefaultComboBoxModel<>(strategyIdentifiers));
+		player2Strategy.setModel(
+				new javax.swing.DefaultComboBoxModel<>(strategyIdentifiers));
 
 	}
 
@@ -134,6 +150,7 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 	private void initComponents() {
 
 		player1Strategy = new javax.swing.JComboBox<>();
+		ruleSet = new javax.swing.JComboBox<>();
 		jLabel1 = new javax.swing.JLabel();
 		jLabel2 = new javax.swing.JLabel();
 		player2Strategy = new javax.swing.JComboBox<>();
@@ -157,6 +174,13 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 
 		player1Strategy.setModel(new javax.swing.DefaultComboBoxModel<>(
 				new String[] { "Human", "CPU" }));
+		ruleSet.setModel(new javax.swing.DefaultComboBoxModel<>(
+				new String[] { "Nomal", "Inversed" }));
+		ruleSet.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				ruleSetActionPerformed(evt);
+			}
+		});
 
 		jLabel1.setText("Player 1 (X)");
 
@@ -260,270 +284,235 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 		getContentPane().setLayout(layout);
 		layout.setHorizontalGroup(layout
 				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						layout.createSequentialGroup().addGap(120, 120, 120)
-								.addComponent(jLabel3).addGap(142, 142, 142))
-				.addGroup(
-						layout.createSequentialGroup()
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addGroup(
-														layout.createSequentialGroup()
-																.addGap(146,
-																		146,
-																		146)
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(
-																						field20,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field00,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field10,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE))
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(
-																						field21,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field01,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field11,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE))
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addComponent(
-																						field22,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field02,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)
-																				.addComponent(
-																						field12,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						80,
-																						javax.swing.GroupLayout.PREFERRED_SIZE)))
-												.addGroup(
-														layout.createSequentialGroup()
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addGap(232,
-																										232,
-																										232)
-																								.addComponent(
-																										jButton1,
-																										javax.swing.GroupLayout.PREFERRED_SIZE,
-																										80,
-																										javax.swing.GroupLayout.PREFERRED_SIZE))
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addContainerGap()
-																								.addGroup(
-																										layout.createParallelGroup(
-																												javax.swing.GroupLayout.Alignment.TRAILING,
-																												false)
-																												.addComponent(
-																														jLabel1,
-																														javax.swing.GroupLayout.Alignment.LEADING,
-																														javax.swing.GroupLayout.DEFAULT_SIZE,
-																														javax.swing.GroupLayout.DEFAULT_SIZE,
-																														Short.MAX_VALUE)
-																												.addComponent(
-																														player1Strategy,
-																														javax.swing.GroupLayout.Alignment.LEADING,
-																														javax.swing.GroupLayout.PREFERRED_SIZE,
-																														javax.swing.GroupLayout.DEFAULT_SIZE,
-																														javax.swing.GroupLayout.PREFERRED_SIZE))
-																								.addGap(20,
-																										20,
-																										20)
-																								.addComponent(
-																										announcement,
-																										javax.swing.GroupLayout.PREFERRED_SIZE,
-																										294,
-																										javax.swing.GroupLayout.PREFERRED_SIZE)))
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-																		javax.swing.GroupLayout.DEFAULT_SIZE,
-																		Short.MAX_VALUE)
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.TRAILING,
-																				false)
-																				.addComponent(
-																						jLabel2,
-																						javax.swing.GroupLayout.Alignment.LEADING,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						Short.MAX_VALUE)
-																				.addComponent(
-																						player2Strategy,
-																						javax.swing.GroupLayout.Alignment.LEADING,
-																						javax.swing.GroupLayout.PREFERRED_SIZE,
-																						javax.swing.GroupLayout.DEFAULT_SIZE,
-																						javax.swing.GroupLayout.PREFERRED_SIZE))))
-								.addContainerGap(159, Short.MAX_VALUE)));
-		layout.setVerticalGroup(layout
-				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-				.addGroup(
-						javax.swing.GroupLayout.Alignment.TRAILING,
-						layout.createSequentialGroup()
-								.addGap(32, 32, 32)
-								.addComponent(jLabel3)
-								.addGap(18, 18, 18)
-								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.TRAILING)
-												.addComponent(
-														field00,
+				.addGroup(layout.createSequentialGroup().addGap(120, 120, 120)
+						.addComponent(jLabel3).addGap(142, 142, 142))
+				.addGroup(layout.createSequentialGroup()
+						.addGroup(layout
+								.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING)
+								.addGroup(layout.createSequentialGroup()
+										.addGap(146, 146, 146).addGroup(layout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.LEADING)
+												.addComponent(field20,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														80,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(
-														field01,
+												.addComponent(field00,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														80,
 														javax.swing.GroupLayout.PREFERRED_SIZE)
-												.addComponent(
-														field02,
+												.addComponent(field10,
 														javax.swing.GroupLayout.PREFERRED_SIZE,
 														80,
 														javax.swing.GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-										11, Short.MAX_VALUE)
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(layout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.LEADING)
+												.addComponent(field21,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(field01,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(field11,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+										.addGroup(layout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.LEADING)
+												.addComponent(field22,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(field02,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addComponent(field12,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)))
+								.addGroup(layout.createSequentialGroup()
+										.addGroup(layout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.LEADING)
+												.addGroup(layout
+														.createSequentialGroup()
+														.addGap(232, 232, 232)
+														.addComponent(jButton1,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																80,
+																javax.swing.GroupLayout.PREFERRED_SIZE)
+
+														.addComponent(ruleSet,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																80,
+																javax.swing.GroupLayout.PREFERRED_SIZE))
+
+												.addGroup(layout
+														.createSequentialGroup()
+														.addContainerGap()
+														.addGroup(layout
+																.createParallelGroup(
+																		javax.swing.GroupLayout.Alignment.TRAILING,
+																		false)
+																.addComponent(
+																		jLabel1,
+																		javax.swing.GroupLayout.Alignment.LEADING,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		Short.MAX_VALUE)
+																.addComponent(
+																		player1Strategy,
+																		javax.swing.GroupLayout.Alignment.LEADING,
+																		javax.swing.GroupLayout.PREFERRED_SIZE,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
+																		javax.swing.GroupLayout.PREFERRED_SIZE))
+														.addGap(20, 20, 20)
+														.addComponent(
+																announcement,
+																javax.swing.GroupLayout.PREFERRED_SIZE,
+																294,
+																javax.swing.GroupLayout.PREFERRED_SIZE)))
+										.addPreferredGap(
+												javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+												javax.swing.GroupLayout.DEFAULT_SIZE,
+												Short.MAX_VALUE)
+										.addGroup(layout
+												.createParallelGroup(
+														javax.swing.GroupLayout.Alignment.TRAILING,
+														false)
+												.addComponent(jLabel2,
+														javax.swing.GroupLayout.Alignment.LEADING,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														Short.MAX_VALUE)
+												.addComponent(player2Strategy,
+														javax.swing.GroupLayout.Alignment.LEADING,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														javax.swing.GroupLayout.DEFAULT_SIZE,
+														javax.swing.GroupLayout.PREFERRED_SIZE))))
+						.addContainerGap(159, Short.MAX_VALUE)));
+		layout.setVerticalGroup(layout
+				.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+				.addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout
+						.createSequentialGroup().addGap(32, 32, 32)
+						.addComponent(jLabel3).addGap(18, 18, 18)
+						.addGroup(layout
+								.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.TRAILING)
+								.addComponent(field00,
+										javax.swing.GroupLayout.PREFERRED_SIZE,
+										80,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(field01,
+										javax.swing.GroupLayout.PREFERRED_SIZE,
+										80,
+										javax.swing.GroupLayout.PREFERRED_SIZE)
+								.addComponent(field02,
+										javax.swing.GroupLayout.PREFERRED_SIZE,
+										80,
+										javax.swing.GroupLayout.PREFERRED_SIZE))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+								11, Short.MAX_VALUE)
+						.addGroup(layout
+								.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING)
 								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addGroup(
-														javax.swing.GroupLayout.Alignment.TRAILING,
-														layout.createSequentialGroup()
+										javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(field10,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(
+														javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(field20,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+								.addGroup(
+										javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(field11,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(
+														javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(field21,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE))
+								.addGroup(
+										javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(field12,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addPreferredGap(
+														javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+												.addComponent(field22,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														80,
+														javax.swing.GroupLayout.PREFERRED_SIZE)))
+						.addPreferredGap(
+								javax.swing.LayoutStyle.ComponentPlacement.RELATED,
+								11, Short.MAX_VALUE)
+						.addGroup(layout
+								.createParallelGroup(
+										javax.swing.GroupLayout.Alignment.LEADING)
+								.addGroup(
+										javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addGroup(layout
+														.createParallelGroup(
+																javax.swing.GroupLayout.Alignment.LEADING)
+														.addGroup(layout
+																.createSequentialGroup()
 																.addComponent(
-																		field10,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																		jLabel1)
+																.addGap(18, 18,
+																		18)
 																.addComponent(
-																		field20,
+																		player1Strategy,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE))
-												.addGroup(
-														javax.swing.GroupLayout.Alignment.TRAILING,
-														layout.createSequentialGroup()
+														.addGroup(layout
+																.createSequentialGroup()
 																.addComponent(
-																		field11,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+																		jLabel2)
+																.addGap(18, 18,
+																		18)
 																.addComponent(
-																		field21,
+																		player2Strategy,
 																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
-																		javax.swing.GroupLayout.PREFERRED_SIZE))
-												.addGroup(
-														javax.swing.GroupLayout.Alignment.TRAILING,
-														layout.createSequentialGroup()
-																.addComponent(
-																		field12,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-																.addComponent(
-																		field22,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		80,
+																		javax.swing.GroupLayout.DEFAULT_SIZE,
 																		javax.swing.GroupLayout.PREFERRED_SIZE)))
-								.addPreferredGap(
-										javax.swing.LayoutStyle.ComponentPlacement.RELATED,
-										11, Short.MAX_VALUE)
+												.addGap(104, 104, 104))
 								.addGroup(
-										layout.createParallelGroup(
-												javax.swing.GroupLayout.Alignment.LEADING)
-												.addGroup(
-														javax.swing.GroupLayout.Alignment.TRAILING,
-														layout.createSequentialGroup()
-																.addGroup(
-																		layout.createParallelGroup(
-																				javax.swing.GroupLayout.Alignment.LEADING)
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										jLabel1)
-																								.addGap(18,
-																										18,
-																										18)
-																								.addComponent(
-																										player1Strategy,
-																										javax.swing.GroupLayout.PREFERRED_SIZE,
-																										javax.swing.GroupLayout.DEFAULT_SIZE,
-																										javax.swing.GroupLayout.PREFERRED_SIZE))
-																				.addGroup(
-																						layout.createSequentialGroup()
-																								.addComponent(
-																										jLabel2)
-																								.addGap(18,
-																										18,
-																										18)
-																								.addComponent(
-																										player2Strategy,
-																										javax.swing.GroupLayout.PREFERRED_SIZE,
-																										javax.swing.GroupLayout.DEFAULT_SIZE,
-																										javax.swing.GroupLayout.PREFERRED_SIZE)))
-																.addGap(104,
-																		104,
-																		104))
-												.addGroup(
-														javax.swing.GroupLayout.Alignment.TRAILING,
-														layout.createSequentialGroup()
-																.addComponent(
-																		jButton1)
-																.addPreferredGap(
-																		javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-																.addComponent(
-																		announcement,
-																		javax.swing.GroupLayout.PREFERRED_SIZE,
-																		63,
-																		javax.swing.GroupLayout.PREFERRED_SIZE)
-																.addGap(47, 47,
-																		47)))));
+										javax.swing.GroupLayout.Alignment.TRAILING,
+										layout.createSequentialGroup()
+												.addComponent(jButton1)
+												.addComponent(ruleSet)
+												.addPreferredGap(
+														javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+												.addComponent(announcement,
+														javax.swing.GroupLayout.PREFERRED_SIZE,
+														63,
+														javax.swing.GroupLayout.PREFERRED_SIZE)
+												.addGap(47, 47, 47)))));
 
 		pack();
 	}// </editor-fold>
@@ -572,6 +561,7 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 		}
 		player1Strategy.setEnabled(false);
 		player2Strategy.setEnabled(false);
+		ruleSet.setEnabled(false);
 		jButton1.setEnabled(false);
 
 		// now engine should start etc
@@ -581,14 +571,20 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 		PlayStrategy first = sp.getStrategy(firstSelection);
 		PlayStrategy second = sp.getStrategy(secondSelection);
 		final PlayStrategy firstStrategy = delay
-				&& (!(first instanceof InteractiveUIStrategy)) ? new DelayedPlayStrategy(
-				first, delayInMs) : first;
+				&& (!(first instanceof InteractiveUIStrategy))
+						? new DelayedPlayStrategy(first, delayInMs) : first;
 		final PlayStrategy secondStrategy = delay
-				&& (!(second instanceof InteractiveUIStrategy)) ? new DelayedPlayStrategy(
-				second, delayInMs) : second;
+				&& (!(second instanceof InteractiveUIStrategy))
+						? new DelayedPlayStrategy(second, delayInMs) : second;
 
-		controller.startGame(firstStrategy, secondStrategy);
+		controller.startGame(firstStrategy, secondStrategy, inverted);
 
+	}
+
+	private void ruleSetActionPerformed(java.awt.event.ActionEvent evt) {
+		String rule = (String) ruleSet.getSelectedItem();
+		inverted = rule.equals("Inversed");
+		initStrategyBoxes();
 	}
 
 	// Variables declaration - do not modify
@@ -608,11 +604,14 @@ public class TicTacToeUI extends javax.swing.JFrame implements Observer {
 	private javax.swing.JLabel jLabel3;
 	private javax.swing.JComboBox<String> player1Strategy;
 	private javax.swing.JComboBox<String> player2Strategy;
+	private javax.swing.JComboBox<String> ruleSet;
 	private java.awt.Label cpuDelay;
 	private javax.swing.JSlider delaySlider;
 	// End of variables declaration
 	private StrategyProvider sp;
 	private Controller controller;
+
+	private boolean inverted = false;
 
 	public void setController(Controller controller) {
 		this.controller = controller;

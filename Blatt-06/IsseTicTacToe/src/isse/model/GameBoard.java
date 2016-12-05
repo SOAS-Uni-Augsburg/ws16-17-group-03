@@ -112,6 +112,57 @@ public class GameBoard {
 		return true;
 	}
 
+	public List<int[]> getLinesFromWinningMove(Move lastMove) {
+		List<int[]> winningMoves = new ArrayList<int[]>();
+		Player turn = Player.valueOf(board[lastMove.row][lastMove.col].name());
+
+		// check row
+		boolean seenDifferent = false;
+		for (int col = 0; col < board.length && !seenDifferent; ++col) {
+			seenDifferent = seenDifferent
+					|| (board[lastMove.row][col] != turn.getFieldState());
+			if (!seenDifferent)
+				winningMoves.add(new int[] { lastMove.row, col });
+		}
+
+		// check col
+		seenDifferent = false;
+		for (int row = 0; row < board.length && !seenDifferent; ++row) {
+			seenDifferent = seenDifferent
+					|| (board[row][lastMove.col] != turn.getFieldState());
+			if (!seenDifferent)
+				winningMoves.add(new int[] { row, lastMove.col });
+		}
+
+		// check diagonal (only if lastMove was actually on one of the
+		// diagonals)
+		if (lastMove.row == lastMove.col) { // main diagonal
+			seenDifferent = false;
+			for (int d = 0; d < board.length && !seenDifferent; ++d) {
+				seenDifferent = seenDifferent
+						|| (board[d][d] != turn.getFieldState());
+				if (!seenDifferent)
+					winningMoves.add(new int[] { d, d });
+			}
+
+		}
+
+		// secondary diagonal
+		if (lastMove.row + lastMove.col == board.length - 1) {
+			seenDifferent = false;
+			for (int d = 0; d < board.length && !seenDifferent; ++d) {
+				seenDifferent = seenDifferent
+						|| (board[d][(board.length - 1) - d] != turn
+								.getFieldState());
+				if (!seenDifferent)
+					winningMoves.add(new int[] { d, (board.length - 1) - d });
+			}
+
+		}
+
+		return winningMoves;
+	}
+
 	/**
 	 * Need to check only the last move
 	 * 

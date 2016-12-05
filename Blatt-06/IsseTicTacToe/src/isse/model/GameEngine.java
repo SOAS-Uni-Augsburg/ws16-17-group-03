@@ -18,6 +18,7 @@ import isse.model.strategies.PlayerBasedStrategy;
 public class GameEngine extends Observable {
 	private GameBoard board;
 	public boolean surpressOutput = false;
+	public boolean invertRules = false;
 
 	public GameBoard getBoard() {
 		return board;
@@ -28,6 +29,7 @@ public class GameEngine extends Observable {
 	}
 
 	private Map<Player, PlayStrategy> strategies;
+	private Move lastMove;
 
 	public GameEngine() {
 		board = new GameBoard();
@@ -57,18 +59,18 @@ public class GameEngine extends Observable {
 
 			int countIllegals = 0;
 
-			Move move = null;
+			lastMove = null;
 			emitMessage("Player " + turn + "' s turn. ("
 					+ nextStrategy.getClass().getSimpleName() + ")");
 
 			while (countIllegals < illegalMoves) {
-				move = nextStrategy.getMove(board);
+				lastMove = nextStrategy.getMove(board);
 				try {
-					board.move(turn, move);
+					board.move(turn, lastMove);
 					break;
 				} catch (RuntimeException re) {
 					++countIllegals;
-					System.out.println("Illegal Move: " + move);
+					System.out.println("Illegal Move: " + lastMove);
 				}
 			}
 
@@ -80,24 +82,39 @@ public class GameEngine extends Observable {
 				terminated = true;
 			} else {
 				if (!surpressOutput) {
-					System.out.println("Player " + turn + " chose " + move);
+					System.out.println("Player " + turn + " chose " + lastMove);
 					System.out.println(board);
 				}
 				this.setChanged();
 				this.notifyObservers(board);
 
 				// was that a winning move?
-				if (board.isWonBy(turn, move)) {
-					gameMessage = "Player " + turn + " has won!";
+				if (board.isWonBy(turn, lastMove)) {
+					if (invertRules) {
+						Player inverted = (turn == Player.CROSSES)
+								? Player.NOUGHTS : Player.CROSSES;
+						gameMessage = "Player " + inverted + " has won!";
+						winner = inverted;
+					} else {
+						gameMessage = "Player " + turn + " has won!";
+						winner = turn;
+					}
+
 					terminated = true;
-					winner = turn;
+					this.setChanged();
+					this.notifyObservers(
+							board.getLinesFromWinningMove(lastMove));
+
 				} else if (board.isFull()) {
 					// drawn
 					gameMessage = "Game is drawn.";
 					terminated = true;
 				}
 			}
-			turn = (turn == Player.CROSSES) ? Player.NOUGHTS : Player.CROSSES;
+			if (!terminated) {
+				turn = (turn == Player.CROSSES) ? Player.NOUGHTS
+						: Player.CROSSES;
+			}
 		}
 		emitMessage("Game finished: " + gameMessage);
 		setChanged();

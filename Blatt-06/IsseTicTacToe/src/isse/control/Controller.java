@@ -64,8 +64,11 @@ public class Controller {
 	}
 
 	public void startGame(final PlayStrategy firstStrategy,
-			final PlayStrategy secondStrategy) {
+			final PlayStrategy secondStrategy, boolean inverted) {
 		final GameEngine gameEngine = new GameEngine();
+		if (inverted) {
+			gameEngine.invertRules = true;
+		}
 
 		gameEngine.addObserver(ticTacToeUI);
 		gameEngine.registerStrategy(Player.CROSSES, firstStrategy);

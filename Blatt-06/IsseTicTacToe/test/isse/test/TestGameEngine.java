@@ -10,6 +10,7 @@ import isse.model.GameEngine;
 import isse.model.PlayStrategy;
 import isse.model.Player;
 import isse.model.strategies.AlphaBetaStrategy;
+import isse.model.strategies.AlphaBetaStrategyInversed;
 import isse.model.strategies.InteractiveStrategy;
 import isse.model.strategies.MiniMaxStrategy;
 import isse.model.strategies.NaiveStrategy;
@@ -27,13 +28,14 @@ public class TestGameEngine {
 
 	@Before
 	public void setup() {
-		setupEngine();
+		setupEngine(false);
 		winners = new ArrayList<Player>();
 	}
 
-	private void setupEngine() {
+	private void setupEngine(boolean inversed) {
 		engine = new GameEngine();
 		engine.surpressOutput = true;
+		engine.invertRules = inversed;
 	}
 
 	@Test
@@ -49,13 +51,25 @@ public class TestGameEngine {
 
 	@Test
 	// @Ignore
+	public void testInversedStrategie() {
+		int ANZAHL_SPIELE = 1000;
+
+		xStrategy = new AlphaBetaStrategyInversed();
+		oStrategy = new AlphaBetaStrategyInversed();
+
+		playNGames(ANZAHL_SPIELE, true);
+		showStatistics();
+	}
+
+	@Test
+	// @Ignore
 	public void testRandomVsNaiveStrategie() {
 		int ANZAHL_SPIELE = 100000;
 
 		xStrategy = new RandomStrategy();
 		oStrategy = new NaiveStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -67,7 +81,7 @@ public class TestGameEngine {
 		xStrategy = new ReflexStrategyHard();
 		oStrategy = new NaiveStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -79,7 +93,7 @@ public class TestGameEngine {
 		xStrategy = new RandomStrategy();
 		oStrategy = new RandomStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -91,7 +105,7 @@ public class TestGameEngine {
 		xStrategy = new ReflexStrategyEasy();
 		oStrategy = new RandomStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -103,7 +117,7 @@ public class TestGameEngine {
 		xStrategy = new ReflexStrategyNormal();
 		oStrategy = new RandomStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -115,7 +129,7 @@ public class TestGameEngine {
 		xStrategy = new RandomStrategy();
 		oStrategy = new ReflexStrategyHard();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -127,7 +141,7 @@ public class TestGameEngine {
 		xStrategy = new ReflexStrategyEasy();
 		oStrategy = new ReflexStrategyEasy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -138,7 +152,7 @@ public class TestGameEngine {
 		xStrategy = new ReflexStrategyHard();
 		oStrategy = new MiniMaxStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -149,7 +163,7 @@ public class TestGameEngine {
 		xStrategy = new MiniMaxStrategy();
 		oStrategy = new ReflexStrategyHard();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -160,7 +174,7 @@ public class TestGameEngine {
 		xStrategy = new MiniMaxStrategy();
 		oStrategy = new MiniMaxStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -173,7 +187,7 @@ public class TestGameEngine {
 		xStrategy = temp;
 		oStrategy = new ReflexStrategyHard();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -184,7 +198,7 @@ public class TestGameEngine {
 		xStrategy = new AlphaBetaStrategy();
 		oStrategy = new AlphaBetaStrategy();
 
-		playNGames(ANZAHL_SPIELE);
+		playNGames(ANZAHL_SPIELE, false);
 		showStatistics();
 	}
 
@@ -201,11 +215,11 @@ public class TestGameEngine {
 		engine.play();
 	}
 
-	private void playNGames(int anz) {
+	private void playNGames(int anz, boolean inversed) {
 
 		// now play
 		for (int i = 0; i < anz; i++) {
-			setupEngine();
+			setupEngine(inversed);
 			engine.registerStrategy(Player.CROSSES, xStrategy);
 			engine.registerStrategy(Player.NOUGHTS, oStrategy);
 

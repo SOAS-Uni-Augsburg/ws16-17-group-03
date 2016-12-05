@@ -128,7 +128,7 @@ public class AlphaBetaStrategy extends RandomStrategy
 	 * @Return +100, +10, +1 for EACH 3-, 2-, 1-in-a-line for computer. -100,
 	 *         -10, -1 for EACH 3-, 2-, 1-in-a-line for opponent. 0 otherwise
 	 */
-	private int evaluate() {
+	public int evaluate() {
 		int score = 0;
 		// Evaluate score for each of the 8 lines (3 rows, 3 columns, 2
 		// diagonals)
